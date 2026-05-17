@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Clicker Game</title>
+
+  <style>
+    body{
+      font-family: Arial;
+      text-align:center;
+      background:#222;
+      color:white;
+      margin-top:50px;
+    }
+
+    button{
+      padding:15px 25px;
+      font-size:20px;
+      margin:10px;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+    }
+
+    #clickBtn{
+      background:gold;
+    }
+
+    #upgradeBtn{
+      background:lime;
+    }
+
+    .box{
+      background:#333;
+      width:250px;
+      margin:auto;
+      padding:20px;
+      border-radius:15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+    <h1>Clicker Game</h1>
+
+    <h2>Score: <span id="score">0</span></h2>
+    <h3>Power: <span id="power">1</span></h3>
+
+    <button id="clickBtn" onclick="clickGame()">
+      CLICK
+    </button>
+
+    <br>
+
+    <button id="upgradeBtn" onclick="upgrade()">
+      Upgrade (10)
+    </button>
+
+    <h2>🏆 Leaderboard</h2>
+    <p>Best Score: <span id="best">0</span></p>
+  </div>
+
+<script>
+let score = 0;
+let power = 1;
+let cost = 10;
+
+let best = localStorage.getItem("bestScore") || 0;
+document.getElementById("best").innerText = best;
+
+function clickGame(){
+  score += power;
+  update();
+}
+
+function upgrade(){
+  if(score >= cost){
+    score -= cost;
+    power++;
+    cost += 10;
+
+    document.getElementById("upgradeBtn").innerText =
+      "Upgrade (" + cost + ")";
+    
+    update();
+  }
+}
+
+function update(){
+  document.getElementById("score").innerText = score;
+  document.getElementById("power").innerText = power;
+
+  if(score > best){
+    best = score;
+    localStorage.setItem("bestScore", best);
+    document.getElementById("best").innerText = best;
+  }
+}
+</script>
+
+</body>
+</html>
