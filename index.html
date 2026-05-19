@@ -2,63 +2,40 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="google-site-verification" content="1wj1SJEMwzx8-Du4kVNx6Q-MwCpx8_rDB4k-ImuEpmU" />
-
-<title>Ved Clicker Game</title>
-
-<meta property="og:title" content="Ved Games Clicker" />
-<meta property="og:description" content="Click, upgrade, and become a legend gamer!" />
-<meta property="og:image" content="https://devtiwari-bit.github.io/Clicker-Game/preview.png" />
+<title>Ved Clicker Arena</title>
 
 <style>
 body{
   margin:0;
   font-family:Arial;
-  background:linear-gradient(135deg,#0f0f0f,#1b1b1b);
+  background:radial-gradient(circle at top,#0f0f0f,#000);
   color:white;
   text-align:center;
-  overflow:hidden;
 }
 
-/* INTRO */
-#intro{
-  position:fixed;
-  width:100%;
-  height:100%;
-  background:black;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  z-index:999;
-  animation:fadeOut 2s ease 2.5s forwards;
-}
-
-#intro h1{
-  color:gold;
-  font-size:40px;
-}
-
-@keyframes fadeOut{
-  to{opacity:0;visibility:hidden;}
-}
-
-/* GAME BOX */
+/* GLASS CARD UI */
 .box{
-  margin-top:80px;
-  width:340px;
-  margin-left:auto;
-  margin-right:auto;
-  background:#222;
-  padding:20px;
+  width:360px;
+  margin:60px auto;
+  padding:25px;
   border-radius:20px;
-  box-shadow:0 0 25px rgba(255,215,0,0.2);
+  background:rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  box-shadow:0 0 30px rgba(0,255,255,0.15);
+  border:1px solid rgba(0,255,255,0.2);
 }
 
+/* TITLE */
+h1{
+  color:#00f7ff;
+  text-shadow:0 0 10px #00f7ff;
+}
+
+/* BUTTONS */
 button{
   padding:12px 18px;
-  font-size:18px;
-  margin:8px;
+  margin:10px;
+  font-size:16px;
   border:none;
   border-radius:12px;
   cursor:pointer;
@@ -69,24 +46,25 @@ button:active{
   transform:scale(0.9);
 }
 
+/* GAME BUTTON */
 #clickBtn{
-  background:gold;
+  background:linear-gradient(45deg,#00f7ff,#0066ff);
+  color:white;
   font-weight:bold;
+  box-shadow:0 0 15px #00f7ff;
 }
 
-#upgradeBtn{
-  background:limegreen;
+/* START BUTTON */
+#startBtn{
+  background:linear-gradient(45deg,#ff00cc,#3333ff);
+  color:white;
 }
 
-.rank{
-  margin-top:10px;
-  color:cyan;
-  font-weight:bold;
-}
-
+/* FLOAT ANIMATION */
 .float{
   position:absolute;
-  color:gold;
+  color:#00f7ff;
+  font-weight:bold;
   animation:floatUp 1s linear forwards;
   pointer-events:none;
 }
@@ -95,146 +73,113 @@ button:active{
   from{opacity:1; transform:translateY(0);}
   to{opacity:0; transform:translateY(-80px);}
 }
+
+/* TIMER */
+.timer{
+  font-size:22px;
+  color:#ffcc00;
+  text-shadow:0 0 10px #ffcc00;
+}
+
+/* RANK */
+.rank{
+  margin-top:10px;
+  font-size:18px;
+  color:#00ff88;
+}
 </style>
 </head>
 
 <body>
 
-<!-- INTRO -->
-<div id="intro">
-  <h1>VED GAMES</h1>
-  <p>Clicker Production</p>
-</div>
-
 <div class="box">
-  <h1>Clicker Game</h1>
+  <h1>VED CLICKER ARENA</h1>
+
+  <div class="timer">Time: <span id="time">10</span>s</div>
 
   <h2>Score: <span id="score">0</span></h2>
-  <h3>Power: <span id="power">1</span></h3>
 
-  <button id="clickBtn">CLICK</button>
-  <button id="upgradeBtn">Upgrade (10)</button>
+  <button id="startBtn" onclick="startGame()">START</button>
+  <button id="clickBtn" onclick="clickGame(event)" disabled>CLICK</button>
 
-  <h3>⏱ CPS: <span id="cps">0</span></h3>
+  <h3>Clicks/sec: <span id="cps">0</span></h3>
 
-  <div class="rank">Rank: <span id="rank">Newbie Gamer</span></div>
+  <div class="rank">Rank: <span id="rank">Not Started</span></div>
 
-  <h3>🏆 Best: <span id="best">0</span></h3>
-
-  <button onclick="submitScore()" style="background:orange;">
-    Submit Global Score
-  </button>
-
-  <p style="font-size:12px;color:#777;">Ved Games Production</p>
+  <h3>Result CPS: <span id="finalCps">-</span></h3>
 </div>
 
 <script>
 let score = 0;
-let power = 1;
-let cost = 10;
+let time = 10;
+let running = false;
 let clicks = 0;
-let startTime = Date.now();
+let interval;
 
-let best = localStorage.getItem("bestScore") || 0;
-document.getElementById("best").innerText = best;
+/* START GAME */
+function startGame(){
+  score = 0;
+  time = 10;
+  clicks = 0;
+  running = true;
 
-/* SOUND */
-const clickSound = new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg");
-clickSound.volume = 0.5;
+  document.getElementById("score").innerText = score;
+  document.getElementById("time").innerText = time;
+  document.getElementById("rank").innerText = "Playing...";
+  document.getElementById("finalCps").innerText = "-";
+
+  document.getElementById("clickBtn").disabled = false;
+
+  interval = setInterval(()=>{
+    time--;
+    document.getElementById("time").innerText = time;
+
+    if(time <= 0){
+      endGame();
+    }
+  },1000);
+}
 
 /* CLICK */
 function clickGame(e){
-  score += power;
+  if(!running) return;
+
+  score++;
   clicks++;
 
-  clickSound.currentTime = 0;
-  clickSound.play();
+  document.getElementById("score").innerText = score;
 
+  // floating effect
   let f = document.createElement("div");
   f.className = "float";
-  f.innerText = "+" + power;
+  f.innerText = "+1";
   f.style.left = e.pageX + "px";
   f.style.top = e.pageY + "px";
   document.body.appendChild(f);
+
   setTimeout(()=>f.remove(),1000);
-
-  update();
 }
 
-/* UPGRADE */
-function upgrade(){
-  if(score >= cost){
-    score -= cost;
-    power++;
-    cost += 10;
-    document.getElementById("upgradeBtn").innerText = "Upgrade ("+cost+")";
-    update();
-  }
+/* END GAME */
+function endGame(){
+  running = false;
+  clearInterval(interval);
+  document.getElementById("clickBtn").disabled = true;
+
+  let cps = (clicks / 10).toFixed(2);
+  document.getElementById("finalCps").innerText = cps;
+
+  document.getElementById("rank").innerText = getRank(cps);
 }
 
-/* RANK */
-function getRank(){
-  if(score < 50) return "Newbie Gamer";
-  if(score < 200) return "Pro Gamer";
-  if(score < 500) return "Hardcore Gamer";
-  return "Legend Gamer";
+/* RANK SYSTEM */
+function getRank(cps){
+  if(cps < 2) return "🥉 Rookie Clicker";
+  if(cps < 4) return "🥈 Pro Clicker";
+  if(cps < 6) return "🥇 Elite Clicker";
+  if(cps < 8) return "🔥 Hardcore Gamer";
+  return "👑 LEGEND CLICKER";
 }
-
-/* UPDATE */
-function update(){
-  document.getElementById("score").innerText = score;
-  document.getElementById("power").innerText = power;
-  document.getElementById("rank").innerText = getRank();
-
-  if(score > best){
-    best = score;
-    localStorage.setItem("bestScore", best);
-    document.getElementById("best").innerText = best;
-  }
-}
-
-/* CPS */
-setInterval(()=>{
-  let sec = (Date.now()-startTime)/1000;
-  let cps = (clicks/sec).toFixed(2);
-  document.getElementById("cps").innerText = cps;
-},1000);
-
-/* EVENTS */
-document.getElementById("clickBtn").addEventListener("click", clickGame);
-document.getElementById("upgradeBtn").addEventListener("click", upgrade);
-
-/* ---------------- GLOBAL LEADERBOARD (FIREBASE PLACEHOLDER) ---------------- */
-/*
-STEP:
-1. Go to firebase.google.com
-2. Enable Realtime Database
-3. Replace config below
-*/
-
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT"
-};
-
-/* UNCOMMENT WHEN READY */
-/*
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-function submitScore(){
-  let name = prompt("Enter name:");
-  if(!name) return;
-
-  db.ref("leaderboard/"+name).set({
-    score: best
-  });
-
-  alert("Score uploaded!");
-}
-*/
 </script>
 
 </body>
