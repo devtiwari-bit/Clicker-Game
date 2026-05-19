@@ -1,102 +1,190 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="google-site-verification" content="1wj1SJEMwzx8-Du4kVNx6Q-MwCpx8_rDB4k-ImuEpmU" />
-    <title>Super Clicker Game</title>
-    
-    <meta property="og:title" content="Ved Games Clicker" />
-    <meta property="og:description" content="Click, upgrade your power, and dominate the leaderboard! Play now for free in" />
-    <meta property="og:image" content="https://devtiwari-bit.github.io/Clicker-Game/preview.png" />
-    <meta property="og:url" content="https://devtiwari-bit.github.io/Clicker-Game/" />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:image" content="https://devtiwari-bit.github.io/Clicker-Game/preview.png">
-  <style>
-    body{
-      font-family: Arial;
-      text-align:center;
-      background:#222;
-      color:white;
-      margin-top:50px;
-    }
+<meta charset="UTF-8">
+<meta name="google-site-verification" content="1wj1SJEMwzx8-Du4kVNx6Q-MwCpx8_rDB4k-ImuEpmU" />
 
-    button{
-      padding:15px 25px;
-      font-size:20px;
-      margin:10px;
-      border:none;
-      border-radius:10px;
-      cursor:pointer;
-    }
+<title>Ved Clicker Game</title>
 
-    #clickBtn{
-      background:gold;
-    }
+<meta property="og:title" content="Ved Games Clicker" />
+<meta property="og:description" content="Click, upgrade, and become a legend gamer!" />
+<meta property="og:image" content="https://devtiwari-bit.github.io/Clicker-Game/preview.png" />
 
-    #upgradeBtn{
-      background:lime;
-    }
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#0f0f0f,#1b1b1b);
+  color:white;
+  text-align:center;
+  overflow:hidden;
+}
 
-    .box{
-      background:#333;
-      width:250px;
-      margin:auto;
-      padding:20px;
-      border-radius:15px;
-    }
-  </style>
+/* INTRO */
+#intro{
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:black;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:999;
+  animation:fadeOut 2s ease 2.5s forwards;
+}
+
+#intro h1{
+  color:gold;
+  font-size:40px;
+}
+
+@keyframes fadeOut{
+  to{opacity:0;visibility:hidden;}
+}
+
+/* GAME BOX */
+.box{
+  margin-top:80px;
+  width:340px;
+  margin-left:auto;
+  margin-right:auto;
+  background:#222;
+  padding:20px;
+  border-radius:20px;
+  box-shadow:0 0 25px rgba(255,215,0,0.2);
+}
+
+button{
+  padding:12px 18px;
+  font-size:18px;
+  margin:8px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+button:active{
+  transform:scale(0.9);
+}
+
+#clickBtn{
+  background:gold;
+  font-weight:bold;
+}
+
+#upgradeBtn{
+  background:limegreen;
+}
+
+.rank{
+  margin-top:10px;
+  color:cyan;
+  font-weight:bold;
+}
+
+.float{
+  position:absolute;
+  color:gold;
+  animation:floatUp 1s linear forwards;
+  pointer-events:none;
+}
+
+@keyframes floatUp{
+  from{opacity:1; transform:translateY(0);}
+  to{opacity:0; transform:translateY(-80px);}
+}
+</style>
 </head>
 
 <body>
 
-  <div class="box">
-    <h1>Clicker Game</h1>
+<!-- INTRO -->
+<div id="intro">
+  <h1>VED GAMES</h1>
+  <p>Clicker Production</p>
+</div>
 
-    <h2>Score: <span id="score">0</span></h2>
-    <h3>Power: <span id="power">1</span></h3>
+<div class="box">
+  <h1>Clicker Game</h1>
 
-    <button id="clickBtn" onclick="clickGame()">
-      CLICK
-    </button>
+  <h2>Score: <span id="score">0</span></h2>
+  <h3>Power: <span id="power">1</span></h3>
 
-    <br>
+  <button id="clickBtn">CLICK</button>
+  <button id="upgradeBtn">Upgrade (10)</button>
 
-    <button id="upgradeBtn" onclick="upgrade()">
-      Upgrade (10)
-    </button>
+  <h3>⏱ CPS: <span id="cps">0</span></h3>
 
-    <h2>🏆 Leaderboard</h2>
-    <p>Best Score: <span id="best">0</span></p>
-  </div>
+  <div class="rank">Rank: <span id="rank">Newbie Gamer</span></div>
+
+  <h3>🏆 Best: <span id="best">0</span></h3>
+
+  <button onclick="submitScore()" style="background:orange;">
+    Submit Global Score
+  </button>
+
+  <p style="font-size:12px;color:#777;">Ved Games Production</p>
+</div>
 
 <script>
 let score = 0;
 let power = 1;
 let cost = 10;
+let clicks = 0;
+let startTime = Date.now();
 
 let best = localStorage.getItem("bestScore") || 0;
 document.getElementById("best").innerText = best;
 
-function clickGame(){
+/* SOUND */
+const clickSound = new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg");
+clickSound.volume = 0.5;
+
+/* CLICK */
+function clickGame(e){
   score += power;
+  clicks++;
+
+  clickSound.currentTime = 0;
+  clickSound.play();
+
+  let f = document.createElement("div");
+  f.className = "float";
+  f.innerText = "+" + power;
+  f.style.left = e.pageX + "px";
+  f.style.top = e.pageY + "px";
+  document.body.appendChild(f);
+  setTimeout(()=>f.remove(),1000);
+
   update();
 }
 
+/* UPGRADE */
 function upgrade(){
   if(score >= cost){
     score -= cost;
     power++;
     cost += 10;
-
-    document.getElementById("upgradeBtn").innerText =
-      "Upgrade (" + cost + ")";
-    
+    document.getElementById("upgradeBtn").innerText = "Upgrade ("+cost+")";
     update();
   }
 }
 
+/* RANK */
+function getRank(){
+  if(score < 50) return "Newbie Gamer";
+  if(score < 200) return "Pro Gamer";
+  if(score < 500) return "Hardcore Gamer";
+  return "Legend Gamer";
+}
+
+/* UPDATE */
 function update(){
   document.getElementById("score").innerText = score;
   document.getElementById("power").innerText = power;
+  document.getElementById("rank").innerText = getRank();
 
   if(score > best){
     best = score;
@@ -104,6 +192,49 @@ function update(){
     document.getElementById("best").innerText = best;
   }
 }
+
+/* CPS */
+setInterval(()=>{
+  let sec = (Date.now()-startTime)/1000;
+  let cps = (clicks/sec).toFixed(2);
+  document.getElementById("cps").innerText = cps;
+},1000);
+
+/* EVENTS */
+document.getElementById("clickBtn").addEventListener("click", clickGame);
+document.getElementById("upgradeBtn").addEventListener("click", upgrade);
+
+/* ---------------- GLOBAL LEADERBOARD (FIREBASE PLACEHOLDER) ---------------- */
+/*
+STEP:
+1. Go to firebase.google.com
+2. Enable Realtime Database
+3. Replace config below
+*/
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT"
+};
+
+/* UNCOMMENT WHEN READY */
+/*
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function submitScore(){
+  let name = prompt("Enter name:");
+  if(!name) return;
+
+  db.ref("leaderboard/"+name).set({
+    score: best
+  });
+
+  alert("Score uploaded!");
+}
+*/
 </script>
 
 </body>
