@@ -2,40 +2,56 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Ved Clicker Arena</title>
+<title>Clicker Arena</title>
 
 <style>
 body{
   margin:0;
   font-family:Arial;
-  background:radial-gradient(circle at top,#0f0f0f,#000);
+  background:radial-gradient(circle at top,#0b0f1a,#000);
   color:white;
   text-align:center;
 }
 
-/* GLASS CARD UI */
+/* MAIN CARD */
 .box{
   width:360px;
   margin:60px auto;
   padding:25px;
-  border-radius:20px;
-  background:rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  box-shadow:0 0 30px rgba(0,255,255,0.15);
-  border:1px solid rgba(0,255,255,0.2);
+  border-radius:18px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(0,180,255,0.25);
+  box-shadow:0 0 25px rgba(0,180,255,0.15);
+  backdrop-filter:blur(10px);
 }
 
 /* TITLE */
 h1{
-  color:#00f7ff;
-  text-shadow:0 0 10px #00f7ff;
+  color:#00c8ff;
+  text-shadow:0 0 10px #00c8ff;
+  margin-bottom:5px;
+}
+
+/* SLOGAN */
+#slogan{
+  color:#aaa;
+  font-size:13px;
+  height:20px;
+  margin-bottom:15px;
+}
+
+/* TIMER */
+.timer{
+  font-size:20px;
+  color:#ffcc00;
+  text-shadow:0 0 10px #ffcc00;
 }
 
 /* BUTTONS */
 button{
   padding:12px 18px;
   margin:10px;
-  font-size:16px;
+  font-size:15px;
   border:none;
   border-radius:12px;
   cursor:pointer;
@@ -46,24 +62,24 @@ button:active{
   transform:scale(0.9);
 }
 
-/* GAME BUTTON */
-#clickBtn{
-  background:linear-gradient(45deg,#00f7ff,#0066ff);
-  color:white;
-  font-weight:bold;
-  box-shadow:0 0 15px #00f7ff;
-}
-
-/* START BUTTON */
+/* START */
 #startBtn{
-  background:linear-gradient(45deg,#ff00cc,#3333ff);
+  background:linear-gradient(45deg,#00c8ff,#0066ff);
   color:white;
 }
 
-/* FLOAT ANIMATION */
+/* CLICK */
+#clickBtn{
+  background:linear-gradient(45deg,#00ffcc,#0099ff);
+  color:black;
+  font-weight:bold;
+  box-shadow:0 0 12px #00ffcc;
+}
+
+/* FLOAT */
 .float{
   position:absolute;
-  color:#00f7ff;
+  color:#00c8ff;
   font-weight:bold;
   animation:floatUp 1s linear forwards;
   pointer-events:none;
@@ -74,18 +90,18 @@ button:active{
   to{opacity:0; transform:translateY(-80px);}
 }
 
-/* TIMER */
-.timer{
-  font-size:22px;
-  color:#ffcc00;
-  text-shadow:0 0 10px #ffcc00;
-}
-
 /* RANK */
 .rank{
   margin-top:10px;
-  font-size:18px;
-  color:#00ff88;
+  color:#00ff99;
+}
+
+/* FOOTER */
+.footer{
+  margin-top:20px;
+  font-size:12px;
+  color:white;
+  opacity:0.8;
 }
 </style>
 </head>
@@ -93,7 +109,10 @@ button:active{
 <body>
 
 <div class="box">
-  <h1>VED CLICKER ARENA</h1>
+
+  <h1>Clicker Arena</h1>
+
+  <div id="slogan">Ready to become a legend?</div>
 
   <div class="timer">Time: <span id="time">10</span>s</div>
 
@@ -107,34 +126,53 @@ button:active{
   <div class="rank">Rank: <span id="rank">Not Started</span></div>
 
   <h3>Result CPS: <span id="finalCps">-</span></h3>
+
+  <div class="footer">@VedGames Production</div>
+
 </div>
 
 <script>
-let score = 0;
-let time = 10;
-let running = false;
-let clicks = 0;
+let score=0;
+let time=10;
+let clicks=0;
+let running=false;
 let interval;
+
+/* SLOGANS */
+let slogans=[
+"Ready to become a legend?",
+"Tap faster than your limits!",
+"Every click builds your power!",
+"Only pros survive the arena!",
+"Speed is everything!"
+];
+
+let sloganIndex=0;
+
+setInterval(()=>{
+  sloganIndex=(sloganIndex+1)%slogans.length;
+  document.getElementById("slogan").innerText=slogans[sloganIndex];
+},2000);
 
 /* START GAME */
 function startGame(){
-  score = 0;
-  time = 10;
-  clicks = 0;
-  running = true;
+  score=0;
+  time=10;
+  clicks=0;
+  running=true;
 
-  document.getElementById("score").innerText = score;
-  document.getElementById("time").innerText = time;
-  document.getElementById("rank").innerText = "Playing...";
-  document.getElementById("finalCps").innerText = "-";
+  document.getElementById("score").innerText=0;
+  document.getElementById("time").innerText=10;
+  document.getElementById("rank").innerText="Playing...";
+  document.getElementById("finalCps").innerText="-";
 
-  document.getElementById("clickBtn").disabled = false;
+  document.getElementById("clickBtn").disabled=false;
 
-  interval = setInterval(()=>{
+  interval=setInterval(()=>{
     time--;
-    document.getElementById("time").innerText = time;
+    document.getElementById("time").innerText=time;
 
-    if(time <= 0){
+    if(time<=0){
       endGame();
     }
   },1000);
@@ -147,38 +185,37 @@ function clickGame(e){
   score++;
   clicks++;
 
-  document.getElementById("score").innerText = score;
+  document.getElementById("score").innerText=score;
 
-  // floating effect
-  let f = document.createElement("div");
-  f.className = "float";
-  f.innerText = "+1";
-  f.style.left = e.pageX + "px";
-  f.style.top = e.pageY + "px";
+  let f=document.createElement("div");
+  f.className="float";
+  f.innerText="+1";
+  f.style.left=e.pageX+"px";
+  f.style.top=e.pageY+"px";
   document.body.appendChild(f);
 
   setTimeout(()=>f.remove(),1000);
 }
 
-/* END GAME */
+/* END */
 function endGame(){
-  running = false;
+  running=false;
   clearInterval(interval);
-  document.getElementById("clickBtn").disabled = true;
+  document.getElementById("clickBtn").disabled=true;
 
-  let cps = (clicks / 10).toFixed(2);
-  document.getElementById("finalCps").innerText = cps;
+  let cps=(clicks/10).toFixed(2);
+  document.getElementById("finalCps").innerText=cps;
 
-  document.getElementById("rank").innerText = getRank(cps);
+  document.getElementById("rank").innerText=getRank(cps);
 }
 
-/* RANK SYSTEM */
+/* RANK */
 function getRank(cps){
-  if(cps < 2) return "🥉 Rookie Clicker";
-  if(cps < 4) return "🥈 Pro Clicker";
-  if(cps < 6) return "🥇 Elite Clicker";
-  if(cps < 8) return "🔥 Hardcore Gamer";
-  return "👑 LEGEND CLICKER";
+  if(cps<2) return "🥉 Rookie";
+  if(cps<4) return "🥈 Pro";
+  if(cps<6) return "🥇 Elite";
+  if(cps<8) return "🔥 Hardcore";
+  return "👑 Legend";
 }
 </script>
 
