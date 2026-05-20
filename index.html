@@ -3,35 +3,43 @@
 <head>
 <meta name="google-site-verification" content="lWj1SJEMwzx8-Du4kVNx6Q-MwCpx8_rDB4k-ImuEpmU" />
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>Clicker Arena -Ved Games Production</title>
 <link rel="icon" type="image/png" href="favicon.png">
+
 <meta name="description" content="Play Clicker Arena Game online free by Ved Games Production. Don't Stop!">
 
-<!-- Open Graph (WhatsApp / Instagram / Facebook preview) -->
 <meta property="og:title" content="Clicker Arena - Ved Games Production">
 <meta property="og:description" content="Play Clicker Arena online free. Simple and addictive browser game.">
 <meta property="og:image" content="https://devtiwari-bit.github.io/Clicker-Arena/preview.png">
 <meta property="og:url" content="https://devtiwari-bit.github.io/Clicker-Arena/">
 <meta property="og:type" content="website">
 
-<!-- Twitter preview (also works sometimes for sharing apps) -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Clicker Arena - Ved Games Production">
 <meta name="twitter:description" content="Play Clicker Arena Game online free browser game.">
 <meta name="twitter:image" content="https://devtiwari-bit.github.io/Clicker-Arena/preview.png">
+
 <style>
-body{
+
+/* FIX MOBILE SCALING */
+html, body {
+  width:100%;
+  height:100%;
   margin:0;
+  padding:0;
+  overflow-x:hidden;
   font-family:Arial;
   background:radial-gradient(circle at top,#0b0f1a,#000);
   color:white;
   text-align:center;
 }
 
-/* MAIN CARD */
+/* MAIN CARD RESPONSIVE FIX */
 .box{
-  width:360px;
+  width:90%;
+  max-width:360px;
   margin:60px auto;
   padding:25px;
   border-radius:18px;
@@ -39,6 +47,7 @@ body{
   border:1px solid rgba(0,180,255,0.25);
   box-shadow:0 0 25px rgba(0,180,255,0.15);
   backdrop-filter:blur(10px);
+  box-sizing:border-box;
 }
 
 /* TITLE */
@@ -119,6 +128,7 @@ button:active{
   color:white;
   opacity:0.8;
 }
+
 </style>
 </head>
 
@@ -148,6 +158,7 @@ button:active{
 </div>
 
 <script>
+
 let score=0;
 let time=10;
 let clicks=0;
@@ -233,6 +244,7 @@ function getRank(cps){
   if(cps<8) return "🔥 Hardcore";
   return "👑 Legend";
 }
+
 </script>
 
 </body>
